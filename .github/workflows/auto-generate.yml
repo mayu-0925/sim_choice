@@ -1,0 +1,71 @@
+name: 記事自動生成
+
+on:
+  schedule:
+    - cron: "0 21 * * 2" # 毎週火曜 朝6時（JST）に実行
+    - cron: "0 21 * * 5" # 毎週金曜 朝6時（JST）に実行
+  workflow_dispatch:      # 手動実行も可能
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # リポジトリへのpushを許可
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      # 1. コードを取得
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Node.js をセットアップ
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      # 3. 依存パッケージをインストール
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. 記事を生成（4エージェント構成: キーワード選定→構成設計→執筆→サムネイル生成）
+      - name: Generate article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_AI_STUDIO_API_KEY: ${{ secrets.GOOGLE_AI_STUDIO_API_KEY }}
+        run: npx tsx scripts/generate-article-v2.ts
+
+      # 5. 変更があればコミット＆プッシュ（最大3回リトライ）
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 生成した記事ファイルを確認
+          GENERATED=$(git status --short content/articles/ | awk '{print $2}')
+          if [ -z "$GENERATED" ]; then
+            echo "新しい記事はありません"
+            exit 0
+          fi
+
+          git add content/articles/
+          git add public/thumbnails/ 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "新しい記事はありません"
+            exit 0
+          fi
+          ARTICLE_COUNT=$(ls content/articles/*.json | wc -l)
+          git commit -m "feat: 記事を自動生成（計${ARTICLE_COUNT}件）"
+
+          for i in 1 2 3; do
+            echo "--- push試行 $i/3 ---"
+            git push origin main && exit 0
+            echo "push失敗。リモートの変更を取り込んで再試行..."
+            git fetch origin main
+            git rebase origin/main
+            sleep 5
+          done
+          echo "3回リトライしましたが失敗しました"
+          exit 1

@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #fafaf8;
+  }
+}
+
+@layer utilities {
+  .card-pop {
+    @apply transition-all duration-200;
+  }
+  .card-pop:hover {
+    transform: translateY(-6px) rotate(0.5deg);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  }
+  .pop-btn {
+    @apply transition-all duration-200;
+  }
+  .pop-btn:hover {
+    transform: scale(1.03);
+  }
+  .pop-btn:active {
+    transform: scale(0.97);
+  }
+  .mascot-balloon::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 16px;
+    border: 8px solid transparent;
+    border-top-color: white;
+    border-bottom: none;
+  }
+}

@@ -1,0 +1,102 @@
+name: データドリブン改善（GSC + GA4）
+
+on:
+  schedule:
+    - cron: "0 22 * * 0"  # 毎週日曜 JST 7:00（UTC 22:00 土曜）
+  workflow_dispatch:        # 手動実行も可能
+
+jobs:
+  analyze-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write   # Workload Identity Federation に必要
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # WIF_PROVIDER が設定されているか確認
+      - name: Check Workload Identity configuration
+        id: wif-check
+        run: |
+          if [ -n "$WIF_PROVIDER" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+
+      # Workload Identity Federation で認証（WIF_PROVIDER シークレットが設定されている場合のみ）
+      - name: Authenticate to Google Cloud (Workload Identity)
+        if: steps.wif-check.outputs.enabled == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      # Step 1: GSC + GA4 データを分析して優先ファイルを生成
+      - name: Analyze Search Console & GA4
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+        run: npx tsx scripts/analyze-data.ts
+
+      # Step 2: 優先スラッグをもとに記事をリライト（最大3件）
+      - name: Rewrite priority articles
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx scripts/rewrite-articles.ts --count 3
+
+      # Step 3: 優先クエリをもとに新記事を生成（1件）
+      - name: Generate new article from priority topics
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_AI_STUDIO_API_KEY: ${{ secrets.GOOGLE_AI_STUDIO_API_KEY }}
+        run: npx tsx scripts/generate-article-v2.ts
+
+      # Step 4: 優先ファイルを削除（次回の分析まで不要）
+      - name: Clean up priority files
+        run: |
+          rm -f content/gsc-priority-slugs.json
+          rm -f content/gsc-priority-topics.json
+
+      # Step 5: 変更をコミット＆プッシュ
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # ステージング
+          git add content/articles/ public/thumbnails/ 2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+
+          # ローカルにコミットしてからpush（rebaseはコミット済み状態で行う）
+          ARTICLE_COUNT=$(ls content/articles/*.json 2>/dev/null | wc -l)
+          git commit -m "improve: GSC/GA4データをもとに記事を改善（計${ARTICLE_COUNT}件）"
+
+          for i in 1 2 3; do
+            echo "--- push 試行 $i/3 ---"
+            git push origin main && exit 0
+            echo "push失敗。リモートの変更を取り込んで再試行..."
+            git fetch origin main
+            git rebase origin/main
+            sleep 5
+          done
+          echo "3回リトライしましたが失敗しました"
+          exit 1
