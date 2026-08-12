@@ -7,7 +7,6 @@ type Props = {
   rankingItems: RankingItem[];
 };
 
-// **太字** / ==マーカー== / [テキスト](URL) をインラインレンダリング
 function renderInlineText(text: string): React.ReactNode[] {
   const parts = text.split(/(\*\*[^*]+\*\*|==[^=]+==|\[[^\]]+\]\([^)]+\))/);
   return parts.map((part, i) => {
@@ -38,14 +37,14 @@ function renderInlineText(text: string): React.ReactNode[] {
 
 export default function ArticleBody({ blocks, rankingItems }: Props) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       {blocks.map((block, i) => {
         switch (block.type) {
           case "heading2":
             return (
               <h2
                 key={i}
-                className="text-xl font-black text-gray-800 pt-4 border-l-4 border-sky-400 pl-3"
+                className="text-xl font-black text-gray-800 pt-2 border-l-4 border-sky-400 pl-3"
               >
                 {block.text}
               </h2>
@@ -54,31 +53,26 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
             return (
               <h3
                 key={i}
-                className="text-base font-black text-gray-800 flex items-center gap-2"
+                className="text-base font-black text-gray-800"
               >
-                <span className="w-6 h-6 bg-sky-100 text-sky-500 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0">
-                  ▶
-                </span>
                 {block.text}
               </h3>
             );
           case "paragraph":
             return (
-              <p key={i} className="text-gray-700 leading-relaxed text-sm">
+              <p key={i} className="text-base text-gray-700 leading-loose">
                 {renderInlineText(block.text)}
               </p>
             );
           case "list":
             return (
-              <ul key={i} className="space-y-2">
+              <ul key={i} className="space-y-3">
                 {block.items.map((item, j) => (
                   <li
                     key={j}
-                    className="flex items-start gap-2 text-sm text-gray-700"
+                    className="flex items-start gap-2 text-base text-gray-700 leading-relaxed"
                   >
-                    <span className="text-sky-400 font-black mt-0.5 flex-shrink-0">
-                      ✓
-                    </span>
+                    <span className="text-sky-400 font-black mt-1 flex-shrink-0">✓</span>
                     <span>{renderInlineText(item)}</span>
                   </li>
                 ))}
@@ -88,10 +82,10 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
             return (
               <div
                 key={i}
-                className="bg-yellow-50 border-l-4 border-yellow-400 rounded-2xl p-4 flex gap-3"
+                className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 flex gap-3"
               >
-                <span className="text-2xl flex-shrink-0">{block.emoji}</span>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <span className="text-xl flex-shrink-0">{block.emoji}</span>
+                <p className="text-base text-gray-700 leading-relaxed">
                   {block.text}
                 </p>
               </div>
@@ -103,38 +97,24 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
             return (
               <div
                 key={i}
-                className={`rounded-2xl p-5 border-2 ${isTop ? "bg-gradient-to-br from-sky-50 to-red-50 border-sky-300" : "bg-sky-50 border-sky-200"}`}
+                className={`rounded-2xl p-5 border ${isTop ? "bg-sky-50 border-sky-200" : "bg-gray-50 border-gray-200"}`}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm font-black">
+                  <span className="text-sm font-black text-gray-700">
                     {isTop ? "🥇 編集部イチオシ" : `🏅 第${block.rankIndex + 1}位`}
                   </span>
                   {isTop && (
-                    <span className="text-xs bg-red-500 text-white font-black px-2 py-0.5 rounded-full animate-pulse">
+                    <span className="text-xs bg-red-500 text-white font-black px-2 py-0.5 rounded-full">
                       期間限定特典あり
                     </span>
                   )}
                 </div>
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div>
-                    <div className="font-black text-gray-800 text-xl">
-                      {item.name}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {item.description}
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {item.tags.map((tag) => (
-                        <span
-                          key={tag.text}
-                          className="text-xs bg-white border border-sky-200 text-sky-700 px-2 py-0.5 rounded-full"
-                        >
-                          {tag.text}
-                        </span>
-                      ))}
-                    </div>
+                    <div className="font-black text-gray-800 text-xl">{item.name}</div>
+                    <div className="text-sm text-gray-500 mt-1">{item.description}</div>
                     {isTop && (
-                      <p className="text-xs text-red-500 font-bold mt-2">
+                      <p className="text-sm text-red-500 font-bold mt-2">
                         🎁 {item.reward.label} {item.reward.value}キャッシュバック中
                       </p>
                     )}
@@ -149,7 +129,7 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
                       {isTop ? "今すぐ申し込む →" : "申し込みはこちら →"}
                     </Link>
                     {isTop && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-400 mt-1">
                         ✓ このリンクからの申し込みが特典対象
                       </p>
                     )}
@@ -160,7 +140,7 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
           }
           case "table":
             return (
-              <div key={i} className="overflow-x-auto rounded-2xl shadow-sm">
+              <div key={i} className="overflow-x-auto rounded-xl border border-gray-200">
                 <table className="w-full text-sm bg-white">
                   <thead>
                     <tr className="bg-sky-400 text-white">
@@ -188,7 +168,7 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
 
           case "bar_chart":
             return (
-              <div key={i} className="bg-white rounded-2xl border border-gray-200 p-5">
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-5">
                 {block.title && (
                   <p className="text-sm font-bold text-gray-600 mb-4">{block.title}</p>
                 )}
@@ -198,7 +178,7 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
                     const pct = Math.round((item.value / maxValue) * 100);
                     return (
                       <div key={j}>
-                        <div className="flex justify-between text-xs text-gray-600 mb-1">
+                        <div className="flex justify-between text-sm text-gray-600 mb-1">
                           <span className="font-bold">{item.label}</span>
                           <span className="font-black text-gray-800">
                             {item.value.toLocaleString()}{item.unit}
@@ -221,54 +201,56 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
 
           case "definition_list":
             return (
-              <div key={i} className="space-y-2">
+              <dl key={i} className="space-y-4">
                 {block.items.map((item, j) => (
-                  <div key={j} className="flex gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm">
-                    <span className="flex-shrink-0 font-bold text-sky-500 text-sm min-w-0 w-36 leading-relaxed">{item.term}</span>
-                    <span className="text-gray-700 text-sm leading-relaxed">{renderInlineText(item.description)}</span>
+                  <div key={j} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                    <dt className="font-bold text-gray-800 text-base mb-1">{item.term}</dt>
+                    <dd className="text-gray-600 text-base leading-relaxed pl-3 border-l-2 border-gray-200">
+                      {renderInlineText(item.description)}
+                    </dd>
                   </div>
                 ))}
-              </div>
+              </dl>
             );
 
           case "steps":
             return (
-              <div key={i} className="space-y-3">
+              <ol key={i} className="space-y-4">
                 {block.items.map((step, j) => (
-                  <div key={j} className="flex gap-4 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                    <div className="flex-shrink-0 w-8 h-8 bg-sky-400 text-white rounded-full flex items-center justify-center font-black text-sm">
+                  <li key={j} className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-sky-400 text-white rounded-full flex items-center justify-center font-black text-sm mt-0.5">
                       {j + 1}
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-800 text-sm mb-1">{step.title}</div>
-                      <div className="text-gray-600 text-sm leading-relaxed">{renderInlineText(step.description)}</div>
+                    <div className="pt-0.5">
+                      <div className="font-bold text-gray-800 text-base mb-1">{step.title}</div>
+                      <div className="text-gray-600 text-base leading-relaxed">{renderInlineText(step.description)}</div>
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
             );
 
           case "editorial_note":
             return (
-              <div key={i} className="bg-blue-50 border-l-4 border-blue-400 rounded-2xl p-4 flex gap-3">
-                <span className="text-2xl flex-shrink-0">📝</span>
+              <div key={i} className="bg-blue-50 border-l-4 border-blue-400 rounded-xl p-4 flex gap-3">
+                <span className="text-xl flex-shrink-0">📝</span>
                 <div>
                   <p className="text-xs font-black text-blue-600 mb-1">編集部より</p>
-                  <p className="text-sm text-gray-700 leading-relaxed">{block.text}</p>
+                  <p className="text-base text-gray-700 leading-relaxed">{block.text}</p>
                 </div>
               </div>
             );
 
           case "related_articles":
             return (
-              <div key={i} className="border border-gray-200 rounded-2xl p-5 bg-gray-50">
-                <p className="text-sm font-black text-gray-700 mb-3">📚 関連記事</p>
+              <div key={i} className="border-t border-gray-200 pt-6">
+                <p className="text-sm font-black text-gray-500 mb-3">📚 関連記事</p>
                 <ul className="space-y-2">
                   {block.items.map((item, j) => (
                     <li key={j}>
                       <Link
                         href={`/blog/${item.slug}`}
-                        className="flex items-center gap-2 text-sm text-sky-500 font-bold hover:text-sky-600 hover:underline underline-offset-2"
+                        className="flex items-center gap-2 text-base text-sky-500 font-bold hover:text-sky-600 hover:underline underline-offset-2"
                       >
                         <span className="text-sky-300 flex-shrink-0">▶</span>
                         {item.title}
