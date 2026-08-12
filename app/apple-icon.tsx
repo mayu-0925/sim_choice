@@ -12,14 +12,14 @@ export default function AppleIcon() {
           width: 180,
           height: 180,
           borderRadius: 36,
-          background: "linear-gradient(135deg, #fb923c, #f97316)",
+          background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: 110,
         }}
       >
-        📡
+        📱
       </div>
     ),
     { ...size }
