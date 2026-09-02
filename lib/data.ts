@@ -3,7 +3,7 @@ import { currentMonthEnd } from "./date";
 
 // アフィリエイトURL（楽天モバイルのみ提携済み）
 // TODO: 実際のアフィリエイトURLに変更してください
-export const RAKUTEN_AFFILIATE_URL = "#";
+export const RAKUTEN_AFFILIATE_URL = "https://px.a8.net/svt/ejp?a8mat=4BA1PB+8EGCPU+5W58+601S1";
 
 // 記事本文データ（slug をキーとして管理）
 export const articleContents: Record<string, ContentBlock[]> = {
