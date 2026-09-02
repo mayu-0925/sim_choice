@@ -8,6 +8,7 @@ export type RankingItem = {
   tags: { text: string; variant: "cool" | "warm" | "green" }[];
   reward: { label: string; value: string };
   affiliateUrl: string;
+  officialUrl?: string;
   ctaColor: string; // Tailwind bg class e.g. "bg-orange-400 hover:bg-orange-500"
   badgeGradient: string; // Tailwind gradient class
 };
