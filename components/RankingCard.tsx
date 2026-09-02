@@ -69,39 +69,45 @@ export default function RankingCard({ item }: Props) {
         </div>
 
         {/* CTA area */}
-        <div className="flex flex-col items-center md:items-end gap-3">
-          <div
-            className={`rounded-2xl px-5 py-2 text-center ${
-              isFirst
-                ? "bg-white border border-yellow-200"
-                : "bg-gray-50 border border-gray-200"
-            }`}
-          >
-            <div className="text-xs text-gray-400 mb-1">
-              {item.reward.label}
-            </div>
+        {item.affiliateUrl ? (
+          <div className="flex flex-col items-center md:items-end gap-3">
             <div
-              className={`text-3xl font-black ${isFirst ? "text-red-500" : "text-blue-500"}`}
+              className={`rounded-2xl px-5 py-2 text-center ${
+                isFirst
+                  ? "bg-white border border-yellow-200"
+                  : "bg-gray-50 border border-gray-200"
+              }`}
             >
-              {item.reward.value}
+              <div className="text-xs text-gray-400 mb-1">
+                {item.reward.label}
+              </div>
+              <div
+                className={`text-3xl font-black ${isFirst ? "text-red-500" : "text-blue-500"}`}
+              >
+                {item.reward.value}
+              </div>
+            </div>
+            <div className="flex flex-col items-center md:items-end gap-1">
+              <Link
+                href={item.affiliateUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className={`text-white font-black px-7 py-3 rounded-2xl pop-btn text-sm whitespace-nowrap transition-colors ${item.ctaColor}`}
+              >
+                {isFirst ? "今すぐ無料で申し込む →" : "申し込みはこちら →"}
+              </Link>
+              {isFirst && (
+                <p className="text-xs text-gray-400 text-center">
+                  ✓ このリンクからの申し込みが特典対象
+                </p>
+              )}
             </div>
           </div>
-          <div className="flex flex-col items-center md:items-end gap-1">
-            <Link
-              href={item.affiliateUrl}
-              target="_blank"
-              rel="noopener noreferrer nofollow"
-              className={`text-white font-black px-7 py-3 rounded-2xl pop-btn text-sm whitespace-nowrap transition-colors ${item.ctaColor}`}
-            >
-              {isFirst ? "今すぐ無料で申し込む →" : "申し込みはこちら →"}
-            </Link>
-            {isFirst && (
-              <p className="text-xs text-gray-400 text-center">
-                ✓ このリンクからの申し込みが特典対象
-              </p>
-            )}
+        ) : (
+          <div className="text-xs text-gray-400 md:text-right leading-relaxed md:max-w-[140px]">
+            参考情報として掲載
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

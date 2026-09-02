@@ -1,6 +1,10 @@
 import type { RankingItem, Article, SiteAlert, HeroStat, HowToStep, ContentBlock } from "./types";
 import { currentMonthEnd } from "./date";
 
+// アフィリエイトURL（楽天モバイルのみ提携済み）
+// TODO: 実際のアフィリエイトURLに変更してください
+export const RAKUTEN_AFFILIATE_URL = "#";
+
 // 記事本文データ（slug をキーとして管理）
 export const articleContents: Record<string, ContentBlock[]> = {
   "kakuyasu-sim-beginners-guide": [
@@ -66,17 +70,16 @@ export const editorialData = {
 export const siteAlert: SiteAlert = {
   message: `🎉 【${currentMonthEnd()}】楽天モバイルが最大20,000ポイント還元キャンペーン実施中！`,
   linkText: "今すぐ申し込む",
-  // TODO: アフィリエイトURLを設定してください
-  linkHref: "#",
+  linkHref: RAKUTEN_AFFILIATE_URL,
 };
 
 // -------------------------------------------------------
 // Heroセクション 統計情報
 // -------------------------------------------------------
 export const heroStats: HeroStat[] = [
-  { value: "7", label: "比較SIM", color: "text-blue-500" },
-  { value: "毎月", label: "情報更新", color: "text-green-500" },
-  { value: "無料", label: "診断サービス", color: "text-teal-500" },
+  { value: "¥1,078", label: "最安月額（3GBまで）", color: "text-red-500" },
+  { value: "♾️", label: "無制限プランあり", color: "text-blue-500" },
+  { value: "20,000", label: "最大還元ポイント", color: "text-green-500" },
 ];
 
 // -------------------------------------------------------
@@ -116,8 +119,8 @@ export const rankingItems: RankingItem[] = [
   {
     rank: 1,
     name: "楽天モバイル",
-    label: "無制限で最安！",
-    description: "3GBまで1,078円、無制限でも3,278円。楽天ポイントも貯まってお得。",
+    label: "編集部イチオシ！",
+    description: "3GBまで月1,078円、データ無制限でも月3,278円と業界最安クラス。縛りなし・解約金なしで気軽に試せる。楽天市場との併用でポイント還元率もアップ。",
     speed: "3GB〜無制限",
     price: "月¥1,078〜",
     tags: [
@@ -126,7 +129,7 @@ export const rankingItems: RankingItem[] = [
       { text: "🎁 楽天ポイント還元", variant: "warm" },
     ],
     reward: { label: "ポイント還元", value: "最大20,000pt" },
-    affiliateUrl: "#",
+    affiliateUrl: RAKUTEN_AFFILIATE_URL,
     ctaColor: "bg-red-500 hover:bg-red-600",
     badgeGradient: "bg-yellow-400",
   },
@@ -143,7 +146,7 @@ export const rankingItems: RankingItem[] = [
       { text: "📱 eSIM対応", variant: "warm" },
     ],
     reward: { label: "乗り換え特典", value: "最大13,000円" },
-    affiliateUrl: "#",
+    affiliateUrl: "",
     ctaColor: "bg-blue-500 hover:bg-blue-600",
     badgeGradient: "bg-gray-500",
   },
@@ -160,7 +163,7 @@ export const rankingItems: RankingItem[] = [
       { text: "👥 コミュニティ充実", variant: "warm" },
     ],
     reward: { label: "紹介キャンペーン", value: "最大6,000円" },
-    affiliateUrl: "#",
+    affiliateUrl: "",
     ctaColor: "bg-green-500 hover:bg-green-600",
     badgeGradient: "bg-gray-400",
   },
@@ -177,7 +180,7 @@ export const rankingItems: RankingItem[] = [
       { text: "🏪 auショップで対応", variant: "green" },
     ],
     reward: { label: "MNP特典", value: "最大10,000円" },
-    affiliateUrl: "#",
+    affiliateUrl: "",
     ctaColor: "bg-pink-500 hover:bg-pink-600",
     badgeGradient: "bg-gray-400",
   },
@@ -194,7 +197,7 @@ export const rankingItems: RankingItem[] = [
       { text: "🏪 店舗対応あり", variant: "green" },
     ],
     reward: { label: "MNP特典", value: "最大10,000円" },
-    affiliateUrl: "#",
+    affiliateUrl: "",
     ctaColor: "bg-purple-500 hover:bg-purple-600",
     badgeGradient: "bg-gray-300",
   },
@@ -211,7 +214,7 @@ export const rankingItems: RankingItem[] = [
       { text: "📶 SB回線使用", variant: "warm" },
     ],
     reward: { label: "PayPay還元", value: "最大5,000円" },
-    affiliateUrl: "#",
+    affiliateUrl: "",
     ctaColor: "bg-teal-500 hover:bg-teal-600",
     badgeGradient: "bg-gray-300",
   },
@@ -228,7 +231,7 @@ export const rankingItems: RankingItem[] = [
       { text: "📦 20GB〜", variant: "green" },
     ],
     reward: { label: "dポイント還元", value: "最大5,000pt" },
-    affiliateUrl: "#",
+    affiliateUrl: "",
     ctaColor: "bg-indigo-500 hover:bg-indigo-600",
     badgeGradient: "bg-gray-200",
   },

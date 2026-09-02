@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { HeroStat, RankingItem } from "@/lib/types";
 import { currentYearMonth } from "@/lib/date";
+import { RAKUTEN_AFFILIATE_URL } from "@/lib/data";
 
 type Props = {
   stats: HeroStat[];
@@ -24,7 +25,7 @@ export default function HeroSection({ stats, featuredItem }: Props) {
             <div className="relative inline-block mb-6">
               <div className="mascot-balloon bg-white rounded-2xl px-4 py-2.5 shadow-lg relative">
                 <p className="text-sm text-gray-700">
-                  👋 こんにちは！格安SIMえらびをお手伝いします
+                  📱 格安SIMへの乗り換えなら楽天モバイルが最有力候補です
                 </p>
               </div>
             </div>
@@ -40,35 +41,34 @@ export default function HeroSection({ stats, featuredItem }: Props) {
             </div>
 
             <h1 className="text-4xl font-black text-gray-800 leading-tight mb-4">
-              むずかしくない！
+              月々の通信費、
               <br />
-              <span className="text-sky-500">格安SIMえらび</span>
+              <span className="text-red-500">楽天モバイル</span>で
+              <br />
+              <span className="text-sky-500">最大7万円節約</span>
             </h1>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              料金・データ量・回線を
-              <span className="font-bold text-sky-500">わかりやすく</span>
-              まとめました。初めてでも安心してえらべます。
+              データ無制限でも月3,278円。縛りなし・解約金なしで、
+              <span className="font-bold text-red-500">今すぐ試せる</span>
+              のが楽天モバイルの最大の強みです。
             </p>
 
-            {/* Quick pick */}
-            <div className="space-y-2">
-              <p className="text-sm font-bold text-gray-500">
-                あなたはどっち？
-              </p>
-              <div className="flex gap-3 flex-wrap">
-                <Link
-                  href="/diagnosis"
-                  className="bg-white border-2 border-sky-300 text-sky-600 font-bold px-5 py-3 rounded-2xl pop-btn text-sm flex items-center gap-2"
-                >
-                  💰 料金を安くしたい
-                </Link>
-                <Link
-                  href="/diagnosis"
-                  className="bg-white border-2 border-blue-300 text-blue-600 font-bold px-5 py-3 rounded-2xl pop-btn text-sm flex items-center gap-2"
-                >
-                  ♾️ データ無制限にしたい
-                </Link>
-              </div>
+            {/* CTAs */}
+            <div className="flex gap-3 flex-wrap">
+              <Link
+                href={RAKUTEN_AFFILIATE_URL}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="bg-red-500 hover:bg-red-600 text-white font-black px-6 py-3 rounded-2xl pop-btn text-sm flex items-center gap-2 transition-colors"
+              >
+                🎁 楽天モバイルに申し込む
+              </Link>
+              <Link
+                href="/diagnosis"
+                className="bg-white border-2 border-sky-300 text-sky-600 font-bold px-5 py-3 rounded-2xl pop-btn text-sm flex items-center gap-2"
+              >
+                💬 他の回線と比較する
+              </Link>
             </div>
           </div>
 
