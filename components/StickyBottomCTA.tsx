@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { RankingItem } from "@/lib/types";
-import { RAKUTEN_AFFILIATE_URL } from "@/lib/data";
+import { RAKUTEN, RAKUTEN_AFFILIATE_URL } from "@/lib/data";
 
-export default function StickyBottomCTA({ featuredItem: _ }: { featuredItem: RankingItem }) {
+export default function StickyBottomCTA() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -22,14 +21,14 @@ export default function StickyBottomCTA({ featuredItem: _ }: { featuredItem: Ran
     >
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-black text-gray-800">楽天モバイル｜最大20,000pt還元</p>
-          <p className="text-xs text-red-500 font-bold">♾️ データ無制限 月3,278円〜</p>
+          <p className="text-xs font-black text-gray-800">楽天モバイル｜最大{RAKUTEN.maxReward}pt還元</p>
+          <p className="text-xs text-red-500 font-bold">♾️ データ無制限 {RAKUTEN.planUnlimited.price}〜</p>
         </div>
         <Link
           href={RAKUTEN_AFFILIATE_URL}
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className="bg-red-500 hover:bg-red-600 text-white text-sm font-black py-3 px-5 rounded-2xl pop-btn transition-colors whitespace-nowrap flex-shrink-0"
+          className="bg-red-500 hover:bg-red-600 text-white text-sm font-black py-3 px-5 rounded-2xl transition-colors whitespace-nowrap flex-shrink-0"
         >
           申し込む →
         </Link>

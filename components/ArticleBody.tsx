@@ -1,10 +1,11 @@
+"use client";
+
 import type { ContentBlock } from "@/lib/types";
-import type { RankingItem } from "@/lib/types";
 import Link from "next/link";
+import CTABanner from "./CTABanner";
 
 type Props = {
   blocks: ContentBlock[];
-  rankingItems: RankingItem[];
 };
 
 function renderInlineText(text: string): React.ReactNode[] {
@@ -25,7 +26,7 @@ function renderInlineText(text: string): React.ReactNode[] {
           key={i}
           href={url}
           {...(isExternal ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
-          className="text-sky-500 font-bold underline underline-offset-2 hover:text-sky-600"
+          className="text-red-500 font-bold underline underline-offset-2 hover:text-red-600"
         >
           {label}
         </Link>
@@ -35,125 +36,84 @@ function renderInlineText(text: string): React.ReactNode[] {
   });
 }
 
-export default function ArticleBody({ blocks, rankingItems }: Props) {
+export default function ArticleBody({ blocks }: Props) {
   return (
     <div className="space-y-8">
       {blocks.map((block, i) => {
         switch (block.type) {
           case "heading2":
             return (
-              <h2
-                key={i}
-                className="text-xl font-black text-gray-800 pt-2 border-l-4 border-sky-400 pl-3"
-              >
+              <h2 key={i} className="text-xl font-black text-gray-800 pt-2 border-l-4 border-red-400 pl-3">
                 {block.text}
               </h2>
             );
+
           case "heading3":
             return (
-              <h3
-                key={i}
-                className="text-base font-black text-gray-800"
-              >
+              <h3 key={i} className="text-base font-black text-gray-800">
                 {block.text}
               </h3>
             );
+
           case "paragraph":
             return (
               <p key={i} className="text-base text-gray-700 leading-loose">
                 {renderInlineText(block.text)}
               </p>
             );
+
           case "list":
             return (
               <ul key={i} className="space-y-3">
                 {block.items.map((item, j) => (
-                  <li
-                    key={j}
-                    className="flex items-start gap-2 text-base text-gray-700 leading-relaxed"
-                  >
-                    <span className="text-sky-400 font-black mt-1 flex-shrink-0">✓</span>
+                  <li key={j} className="flex items-start gap-2 text-base text-gray-700 leading-relaxed">
+                    <span className="text-red-400 font-black mt-1 flex-shrink-0">✓</span>
                     <span>{renderInlineText(item)}</span>
                   </li>
                 ))}
               </ul>
             );
+
           case "callout":
             return (
-              <div
-                key={i}
-                className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 flex gap-3"
-              >
+              <div key={i} className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 flex gap-3">
                 <span className="text-xl flex-shrink-0">{block.emoji}</span>
-                <p className="text-base text-gray-700 leading-relaxed">
-                  {block.text}
-                </p>
+                <p className="text-base text-gray-700 leading-relaxed">{block.text}</p>
               </div>
             );
-          case "ranking_cta": {
-            const item = rankingItems[block.rankIndex];
-            if (!item) return null;
-            const isTop = block.rankIndex === 0;
+
+          case "cta_banner":
             return (
-              <div
+              <CTABanner
                 key={i}
-                className={`rounded-2xl p-5 border ${isTop ? "bg-sky-50 border-sky-200" : "bg-gray-50 border-gray-200"}`}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm font-black text-gray-700">
-                    {isTop ? "🥇 編集部イチオシ" : `🏅 第${block.rankIndex + 1}位`}
-                  </span>
-                  {isTop && (
-                    <span className="text-xs bg-red-500 text-white font-black px-2 py-0.5 rounded-full">
-                      期間限定特典あり
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div>
-                    <div className="font-black text-gray-800 text-xl">{item.name}</div>
-                    <div className="text-sm text-gray-500 mt-1">{item.description}</div>
-                    {isTop && (
-                      <p className="text-sm text-red-500 font-bold mt-2">
-                        🎁 {item.reward.label} {item.reward.value}キャッシュバック中
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <Link
-                      href={item.affiliateUrl}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                      className={`text-white font-black px-6 py-4 rounded-2xl pop-btn text-base whitespace-nowrap transition-colors shadow-md ${item.ctaColor}`}
-                    >
-                      {isTop ? "今すぐ申し込む →" : "申し込みはこちら →"}
-                    </Link>
-                    {isTop && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        ✓ このリンクからの申し込みが特典対象
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+                title={block.title}
+                description={block.description}
+                buttonText={block.buttonText}
+                variant="compact"
+              />
             );
-          }
+
+          // 旧ブロックの互換レンダリング → cta_banner として表示
+          case "service_cta":
+          case "ranking_cta":
+            return (
+              <CTABanner key={i} variant="compact" />
+            );
+
           case "table":
             return (
               <div key={i} className="overflow-x-auto rounded-xl border border-gray-200">
                 <table className="w-full text-sm bg-white">
                   <thead>
-                    <tr className="bg-sky-400 text-white">
+                    <tr className="bg-red-500 text-white">
                       {block.headers.map((h, j) => (
-                        <th key={j} className="py-3 px-4 text-left font-bold whitespace-nowrap">
-                          {h}
-                        </th>
+                        <th key={j} className="py-3 px-4 text-left font-bold whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {block.rows.map((row, j) => (
-                      <tr key={j} className={j % 2 === 0 ? "bg-white" : "bg-sky-50"}>
+                      <tr key={j} className={j % 2 === 0 ? "bg-white" : "bg-red-50"}>
                         {row.map((cell, k) => (
                           <td key={k} className={`py-3 px-4 border-b border-gray-100 ${k === 0 ? "font-bold text-gray-700" : "text-gray-600"}`}>
                             {cell}
@@ -169,20 +129,16 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
           case "bar_chart":
             return (
               <div key={i} className="bg-white rounded-xl border border-gray-200 p-5">
-                {block.title && (
-                  <p className="text-sm font-bold text-gray-600 mb-4">{block.title}</p>
-                )}
+                {block.title && <p className="text-sm font-bold text-gray-600 mb-4">{block.title}</p>}
                 <div className="space-y-3">
                   {block.items.map((item, j) => {
-                    const maxValue = Math.max(...block.items.map((i) => i.value));
+                    const maxValue = Math.max(...block.items.map((bi) => bi.value));
                     const pct = Math.round((item.value / maxValue) * 100);
                     return (
                       <div key={j}>
                         <div className="flex justify-between text-sm text-gray-600 mb-1">
                           <span className="font-bold">{item.label}</span>
-                          <span className="font-black text-gray-800">
-                            {item.value.toLocaleString()}{item.unit}
-                          </span>
+                          <span className="font-black text-gray-800">{item.value.toLocaleString()}{item.unit}</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-5">
                           <div
@@ -218,7 +174,7 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
               <ol key={i} className="space-y-4">
                 {block.items.map((step, j) => (
                   <li key={j} className="flex gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 bg-sky-400 text-white rounded-full flex items-center justify-center font-black text-sm mt-0.5">
+                    <div className="flex-shrink-0 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-black text-sm mt-0.5">
                       {j + 1}
                     </div>
                     <div className="pt-0.5">
@@ -241,6 +197,37 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
               </div>
             );
 
+          case "experience":
+            return (
+              <div key={i} className="bg-green-50 border-l-4 border-green-400 rounded-xl p-4">
+                <p className="text-xs font-black text-green-600 mb-1">👤 編集部の体験談</p>
+                <p className="text-base text-gray-700 leading-relaxed">{block.text}</p>
+                {block.result && (
+                  <p className="mt-2 text-sm font-bold text-green-700 bg-green-100 rounded-lg px-3 py-1.5">
+                    → {block.result}
+                  </p>
+                )}
+              </div>
+            );
+
+          case "faq":
+            return (
+              <div key={i} className="space-y-4">
+                {block.items.map((item, j) => (
+                  <div key={j} className="rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="bg-red-50 px-4 py-3 flex gap-2">
+                      <span className="text-red-500 font-black text-base flex-shrink-0">Q</span>
+                      <p className="font-bold text-gray-800 text-base">{item.question}</p>
+                    </div>
+                    <div className="px-4 py-3 flex gap-2 bg-white">
+                      <span className="text-gray-400 font-black text-base flex-shrink-0">A</span>
+                      <p className="text-gray-700 text-base leading-relaxed">{item.answer}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+
           case "related_articles":
             return (
               <div key={i} className="border-t border-gray-200 pt-6">
@@ -249,10 +236,10 @@ export default function ArticleBody({ blocks, rankingItems }: Props) {
                   {block.items.map((item, j) => (
                     <li key={j}>
                       <Link
-                        href={`/blog/${item.slug}`}
-                        className="flex items-center gap-2 text-base text-sky-500 font-bold hover:text-sky-600 hover:underline underline-offset-2"
+                        href={`/blog/${item.slug}/`}
+                        className="flex items-center gap-2 text-base text-red-500 font-bold hover:text-red-600 hover:underline underline-offset-2"
                       >
-                        <span className="text-sky-300 flex-shrink-0">▶</span>
+                        <span className="text-red-300 flex-shrink-0">▶</span>
                         {item.title}
                       </Link>
                     </li>
